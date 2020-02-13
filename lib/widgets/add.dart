@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/main.dart';
+import 'package:flutter_project/services/lang.dart';
 
 class AddPage extends StatelessWidget {
 
@@ -7,14 +8,13 @@ class AddPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    multilang localizations = Localizations.of<multilang>(context, multilang);
     return new Scaffold(
         appBar: AppBar(
-          title: Text("Add Spot Type"),
+          title: Text(localizations.anadir),
         ),
         drawer: AppDrawer(),
-        body: Center(
-            child: Text("Pantalla añadir Spot Type")
-        )
+        body: AddScreen(),
     );
   }
 }
@@ -35,8 +35,7 @@ class AddScreenState extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         body: BottomAppBar(
           child: Column(
             children: <Widget>[
@@ -44,7 +43,6 @@ class AddScreenState extends State<AddScreen> {
             ],
           ),
         ),
-      ),
     );
 
   }

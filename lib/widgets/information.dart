@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/main.dart';
+import 'package:flutter_project/services/lang.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'package:flutter_project/utils/constants.dart';
+import 'package:devicelocale/devicelocale.dart';
 
 class InfoPage extends StatelessWidget{
 
@@ -12,9 +14,10 @@ class InfoPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    multilang localizations = Localizations.of<multilang>(context, multilang);
     return new Scaffold(
         appBar: AppBar(
-          title: Text("Information"),
+          title: Text(localizations.informacion),
         ),
         drawer: AppDrawer(),
         body: InformationScreen());
@@ -44,6 +47,7 @@ class InformationScreenState extends State<InformationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: BottomAppBar(
+        child: SingleChildScrollView(
           child: Column(
               children:<Widget>[
                 Container(
@@ -78,6 +82,7 @@ class InformationScreenState extends State<InformationScreen> {
                   ),
                 ),
               ]
+             ),
           ),
         ),
     );
@@ -89,10 +94,13 @@ class InformationScreenState extends State<InformationScreen> {
   }
 
   Future<InformationData> fetchInformation() async{
+    //String lang = Resources.getSystem().getConfiguration().locale.getLanguage();
+    //String language = Locale.getDefault().getDisplayLanguage().toString();
+    List languages = await Devicelocale.preferredLanguages;
+    String locale = await Devicelocale.currentLocale;
+    String lang = locale.substring(0,2);
 
-    String language = "es";
-
-    final response = await http.get(Constants.API_GET_INFORMATION + language,
+    final response = await http.get(Constants.API_GET_INFORMATION + lang,
       headers: {HttpHeaders.authorizationHeader: Constants.PUBLIC_TOKEN},);
 
     if(response.statusCode == 200){
@@ -105,8 +113,6 @@ class InformationScreenState extends State<InformationScreen> {
     }
   }
 }
-
-
 
   class InformationData{
     String valor;
