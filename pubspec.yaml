@@ -38,9 +38,10 @@ flutter:
   assets:
     - assets/urb.jpeg
     - assets/logocolor.png
-    - assets/parking.png
-    - assets/parking_carga.png
-    - assets/parking_minus.png
+    - assets/icons/parking.png
+    - assets/icons/parking_carga.png
+    - assets/icons/parking_minus.png
+    - assets/logoblancoazul.png
 
 
 

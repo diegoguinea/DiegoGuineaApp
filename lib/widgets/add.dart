@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project/main.dart';
+import 'package:flutter_project/home.dart';
 import 'package:flutter_project/services/lang.dart';
 
 class AddPage extends StatelessWidget {

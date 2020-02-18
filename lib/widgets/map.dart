@@ -6,17 +6,18 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/datamodels/infoRegulatedSpot.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_project/datamodels/regulatedSpots.dart';
 import 'package:flutter_project/utils/constants.dart';
-import 'package:flutter_project/main.dart';
+import 'package:flutter_project/home.dart';
+import 'package:flutter_project/utils/utils.dart';
 
 class MapPage extends StatelessWidget{
 
   static const String routeName = '/map';
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -148,7 +149,6 @@ class MapScreenState extends State<MapScreen> {
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     _controller.complete(controller);
-
     //crida API urbiotica
     project = await getRegulatedSpots();
 
@@ -156,6 +156,7 @@ class MapScreenState extends State<MapScreen> {
     setState(() {
       markers.clear();
       _parkingToMarkers(project);
+
     });
 
     try {
@@ -218,10 +219,12 @@ class MapScreenState extends State<MapScreen> {
       Marker marker = Marker(
 
         icon: (customIcon),
+        onTap: (){
+          _pressmarker(listRegulatedSpots[i].pom_id.toString());
+        },
         markerId: MarkerId(listRegulatedSpots[i].pom_id.toString()),
         infoWindow: InfoWindow(
             title: listRegulatedSpots[i].name, snippet: address),
-        //name i address --> si es null == ""
         position: LatLng(listRegulatedSpots[i].location.lat,
             listRegulatedSpots[i].location.lon), //lat i lon
       );
@@ -229,30 +232,87 @@ class MapScreenState extends State<MapScreen> {
       markers[marker.markerId] = marker;
     }
   }
+// TODO: Aqui definimos la informacion que damos cuando presionamos el icono
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //  Funcions extres que no necessitem pero per fer proves
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   _pressmarker(String pomid) async {
 
-  void _onAddMarkerButtonPressed() {
-    setState(() {
-      Marker resultMarker = Marker(
-        icon: BitmapDescriptor.defaultMarker,
-        markerId: MarkerId("id2"),
-        infoWindow: InfoWindow(title: "title", snippet: "snippet"),
-        position: LatLng(41.6, 2.11),
+    final response = await http.get(Constants.API_GET_POM_ID + pomid,
+      headers: {HttpHeaders.authorizationHeader: Constants.PUBLIC_TOKEN},);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      ProjectIndividualSpot project = ProjectIndividualSpot.fromJson(jsonResponse);
+
+      Utils utils = new Utils();
+      bool insideInterval = utils.isInsideInterval(project.regulated_spots.list_regulated_periods[0]);
+      _showinfo(project);
+
+    } else {
+      throw Exception('No pudieron cargarse los datos:' + response.body);
+    }
+}
+  _showinfo(ProjectIndividualSpot project){
+      showBottomSheet(context: context, builder: (builder){
+       return Container(
+          height: 200,
+          width: double.infinity,
+          color: Colors.blue,
+          child : Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  new Padding(padding: EdgeInsets.only(left: 25)),
+                  Container(
+                      child:  Text(project.regulated_spots.name,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 23),)
+                  ),
+                  SizedBox(width: 180),
+                  IconButton(
+                    color: Colors.white,
+                    icon: Icon(Icons.keyboard_arrow_down,size: 35,),
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 10,),
+              Row(
+                children: <Widget>[
+                  new Padding(padding: EdgeInsets.only(left: 25)),
+                  Container(
+                    child: Text(project.regulated_spots.occupation.max_capacity.toString() + ' spots ' + project.regulated_spots.spot_type.name,style: TextStyle(color: Colors.white,fontStyle: FontStyle.italic)),
+                  ),
+                ],
+              ),
+              SizedBox(height: 75,),
+              Row(
+                children: <Widget>[
+                  Container(
+                    child: Text(project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].starttime.substring(0,5) + "/" + project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].endtime.substring(0,5),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                   RaisedButton(
+                      color: Colors.lightBlueAccent,
+                      child: Text('MORE INFO'),
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                    ),
+
+                ],
+              ),
+
+
+            ],
+          ),
       );
-      print("add marker");
-      _addMarkers(resultMarker);
     });
   }
 
-  //funcio que afegeix markers de forma dinamica amb el setState
-  void _addMarkers(Marker marker) {
-    // creating a new MARKER
-    setState(() {
-      // adding a new marker to map
-      markers[marker.markerId] = marker;
-    });
-  }
+
 }

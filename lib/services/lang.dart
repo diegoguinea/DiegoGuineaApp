@@ -51,9 +51,9 @@ class multilang {
   }
   String get localizacion{
     if(nombrelang == 'en'){
-      return "Location";
+      return "  Location";
     } if (nombrelang == 'es'){
-      return "Localizacion";
+      return "  Localizacion";
     }
   }
   String get abrirajustesloc{
