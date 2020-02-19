@@ -82,8 +82,7 @@ class RegulatedPeriod{
     if(json['time_period_types'] != null){
 
       var listRegulated = json['time_period_types'] as List;
-      var listDaysWeek2 = new Map.from(json['days_of_the_week']) ;
-      //Map<String,TimeStartEnd> listDaysWeek2 = json['days_of_the_week'];
+      var listDaysWeek = new Map.from(json['days_of_the_week']) ;
 
       return RegulatedPeriod(
         time_period_id: json['time_period_id'],
@@ -92,8 +91,7 @@ class RegulatedPeriod{
         end: json['end'],
         timezone: json['timezone'],
         time_period_types: listRegulated.map((tagJson)=> TimePeriodType.fromJson(tagJson)).toList(),
-        days_of_the_week: listDaysWeek2.map( (key, value) =>
-        new MapEntry<String, TimeStartEnd>(key, TimeStartEnd.fromJson(value))),
+        days_of_the_week: listDaysWeek.map( (key, value) => new MapEntry<String, TimeStartEnd>(key, TimeStartEnd.fromJson(value))),
 
 
       );

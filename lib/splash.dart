@@ -22,14 +22,14 @@ class _SplshScr extends State<SplashScreen>{
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromRGBO(89, 184, 251, 1),
+      color: Color.fromRGBO(47, 180, 233, 1),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
             height: 400,
              width: 400,
-             child : Image.asset('assets/logoblancoazul.png'),
+             child : Image.asset('assets/logoblancoazul2.png'),
           ),
           Center(
             child:  Row(

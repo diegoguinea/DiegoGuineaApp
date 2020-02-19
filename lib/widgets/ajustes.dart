@@ -13,7 +13,9 @@ class SettingsPage extends StatelessWidget {
     multilang localizations = Localizations.of<multilang>(context, multilang);
     return new Scaffold(
         appBar: AppBar(
-          title: Text(localizations.ajustes,textAlign: TextAlign.center),backgroundColor: Colors.lightBlueAccent),
+          title: Text(localizations.ajustes),backgroundColor: Color.fromRGBO(47, 180, 233, 1),
+          centerTitle: true,
+        ),
         drawer: AppDrawer(),
         body: SettingsScreen(),
     );
@@ -26,15 +28,12 @@ class SettingsScreen extends StatefulWidget{
   State<SettingsScreen> createState()=> SettingsScreenState();
 }
 
-
 class SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void initState(){
     super.initState();
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +50,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             Row(
               children: <Widget>[
                 Container(
-                  child: Text(localizations.localizacion,style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold),),
+                  child: Text(localizations.localizacion,style: TextStyle(color: Color.fromRGBO(47, 180, 233, 1),fontWeight: FontWeight.bold),),
                 ),
                 ]
             ),
@@ -60,7 +59,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 children: <Widget>[
                   Icon(
                     Icons.location_on,
-                    color: Colors.blueAccent,
+                    color: Color.fromRGBO(47, 180, 233, 1),
                   ),
                   Container(
                     width: 20,

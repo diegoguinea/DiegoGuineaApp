@@ -14,15 +14,19 @@ import 'package:flutter_project/datamodels/regulatedSpots.dart';
 import 'package:flutter_project/utils/constants.dart';
 import 'package:flutter_project/home.dart';
 import 'package:flutter_project/utils/utils.dart';
+import 'package:flutter_project/Routes.dart';
 
 class MapPage extends StatelessWidget{
+
 
   static const String routeName = '/map';
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: AppBar(
-            title: Text("Plazas de Parking Reguladas",textAlign: TextAlign.center),backgroundColor: Colors.lightBlueAccent),
+            title: Text("Plazas de Parking Reguladas"),backgroundColor: Color.fromRGBO(47, 180, 233, 1),
+          centerTitle: true,
+        ),
         drawer: AppDrawer(),
         body: MapScreen());
   }
@@ -243,72 +247,128 @@ class MapScreenState extends State<MapScreen> {
       Map<String, dynamic> jsonResponse = json.decode(response.body);
       ProjectIndividualSpot project = ProjectIndividualSpot.fromJson(jsonResponse);
 
-      Utils utils = new Utils();
-      bool insideInterval = utils.isInsideInterval(project.regulated_spots.list_regulated_periods[0]);
+
       _showinfo(project);
 
     } else {
       throw Exception('No pudieron cargarse los datos:' + response.body);
     }
-}
+  }
+
+   _preciohora(TimePeriodType timePeriodType, bool currentperiod){
+      String resultado = "";
+      if(currentperiod) {
+        if (timePeriodType.period_type_id == 3) {
+          resultado = "Max time:  " + timePeriodType.value + " min";
+        } else if (timePeriodType.period_type_id == 2) {
+          resultado = "Price  " + timePeriodType.value + " €/h";
+        }
+      }
+      return resultado;
+   }
+
+   _inside(bool currentperiod, ProjectIndividualSpot project){
+       String result = "";
+       if(currentperiod == false){
+            result = "Current Regulated Period:  None";
+         }else{
+            result = "Current Regulated Period:   " + project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].starttime.substring(0,5) + "/" + project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].endtime.substring(0,5);
+         }
+       return result;
+    }
+
   _showinfo(ProjectIndividualSpot project){
-      showBottomSheet(context: context, builder: (builder){
+
+    Utils utils = new Utils();
+    var regulatedPeriodWidgets = List<Widget>();
+    var currentperiodWidget = List<Widget>();
+    String currentperiod;
+
+    for(RegulatedPeriod regulatedPeriod in project.regulated_spots.list_regulated_periods){
+
+      //miramos si la hora actual esta dentro del periodo regulado de la plaza de parking
+      //TODO si la variable insideCurrentRegulatedPeriod==false, poner "None" en la Row de "Current Regulated Period"
+       bool insideCurrentRegulatedPeriod = utils.isInsideInterval(regulatedPeriod);
+       currentperiod = _inside(insideCurrentRegulatedPeriod,project);
+       currentperiodWidget.add(
+         new Row(
+           children: <Widget>[
+             new Padding(padding: EdgeInsets.only(left: 25)),
+             Text(currentperiod,style: TextStyle(color: Colors.white),),
+           ],
+         ),
+       );
+      //creamos una lista de widgets que depende de cuantos "time_period_types" tenemos. Para cada ptime_period_types, añadimos un widget.
+      for(TimePeriodType timePeriodType in regulatedPeriod.time_period_types){
+        String resultado = _preciohora(timePeriodType, insideCurrentRegulatedPeriod);
+        if(resultado != "") {  //sino añade una row con el texto vacio
+          regulatedPeriodWidgets.add(
+            new Row(
+              children: <Widget>[
+                new Padding(padding: EdgeInsets.only(left: 50)),
+                Text(resultado, style: TextStyle(color: Colors.white),),
+              ],
+            ),
+          );
+        }
+      }
+
+    }
+
+    showBottomSheet(context: context, builder: (builder){
        return Container(
           height: 200,
           width: double.infinity,
-          color: Colors.blue,
-          child : Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  new Padding(padding: EdgeInsets.only(left: 25)),
-                  Container(
-                      child:  Text(project.regulated_spots.name,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 23),)
-                  ),
-                  SizedBox(width: 180),
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(Icons.keyboard_arrow_down,size: 35,),
-                    onPressed: (){
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 10,),
-              Row(
-                children: <Widget>[
-                  new Padding(padding: EdgeInsets.only(left: 25)),
-                  Container(
-                    child: Text(project.regulated_spots.occupation.max_capacity.toString() + ' spots ' + project.regulated_spots.spot_type.name,style: TextStyle(color: Colors.white,fontStyle: FontStyle.italic)),
-                  ),
-                ],
-              ),
-              SizedBox(height: 75,),
-              Row(
-                children: <Widget>[
-                  Container(
-                    child: Text(project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].starttime.substring(0,5) + "/" + project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].endtime.substring(0,5),
+          color: Color.fromRGBO(47, 180, 233, 1),
+          child: SingleChildScrollView(
+            child : Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    new Padding(padding: EdgeInsets.only(left: 25)),
+                    Container(
+                        child:  Text(project.regulated_spots.name,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 23),)
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                   RaisedButton(
-                      color: Colors.lightBlueAccent,
-                      child: Text('MORE INFO'),
+                    SizedBox(width: 180),
+                    IconButton(
+                      color: Colors.white,
+                      icon: Icon(Icons.keyboard_arrow_down,size: 35,),
                       onPressed: (){
                         Navigator.pop(context);
                       },
                     ),
+                  ],
+                ),
 
-                ],
-              ),
+                SizedBox(height: 10,),
+                Row(
+                  children: <Widget>[
+                    new Padding(padding: EdgeInsets.only(left: 25)),
+                    Container(
+                      child: Text(project.regulated_spots.occupation.max_capacity.toString() + ' spots ' + project.regulated_spots.spot_type.name,style: TextStyle(color: Colors.white,fontStyle: FontStyle.italic)),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10,),
+                Column(children: currentperiodWidget,),
+                SizedBox(height: 10,),
+               Column(children: regulatedPeriodWidgets,),
+                SizedBox(height: 5,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    RaisedButton(
+                      color: Color.fromRGBO(47, 180, 233, 1),
+                      child: Text('MORE INFO',style: TextStyle(color: Colors.white),),
+                      onPressed: (){
+                        Navigator.pushNamed(context, Routes.moreinfo);
+                      },
+                    ),
 
-
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
       );
     });

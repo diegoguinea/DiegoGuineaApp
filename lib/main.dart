@@ -8,6 +8,7 @@ import 'package:flutter_project/widgets/information.dart';
 import 'package:flutter_project/widgets/map.dart';
 import 'package:flutter_project/Routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_project/widgets/moreinfo.dart';
 
 
 
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           Routes.information: (BuildContext context) => new InfoPage(),
           Routes.settings: (BuildContext context) => new SettingsPage(),
           Routes.addSpotType: (BuildContext context) => new AddPage(),
+          Routes.moreinfo: (BuildContext context)=> new Moreinfo(),
         }
     );
   }

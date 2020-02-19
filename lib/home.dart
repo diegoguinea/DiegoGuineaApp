@@ -15,7 +15,11 @@ class DWidget extends StatelessWidget {
     return new Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
-          title: Text(localizations.titulomap,textAlign: TextAlign.center),backgroundColor: Colors.lightBlueAccent),
+          title: Text(localizations.titulomap),
+          backgroundColor: Color.fromRGBO(47, 180, 233, 1),
+          centerTitle: true,
+      ),
+
       body: MapScreen(),
     );
   }
@@ -79,7 +83,7 @@ Widget _createHeader(){
     accountName: Text("Usuario"),
     accountEmail: Text("usuario@gmail.com"),
     decoration: BoxDecoration(
-        color: Colors.lightBlueAccent,
+        color: Color.fromRGBO(47, 180, 233, 1),
         image: DecorationImage(image: NetworkImage(""),
             fit : BoxFit.cover
         )

@@ -18,6 +18,8 @@ class InfoPage extends StatelessWidget{
     return new Scaffold(
         appBar: AppBar(
           title: Text(localizations.informacion),
+          backgroundColor: Color.fromRGBO(47, 180, 233, 1),
+          centerTitle: true,
         ),
         drawer: AppDrawer(),
         body: InformationScreen());

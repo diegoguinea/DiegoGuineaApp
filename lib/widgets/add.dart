@@ -12,6 +12,8 @@ class AddPage extends StatelessWidget {
     return new Scaffold(
         appBar: AppBar(
           title: Text(localizations.anadir),
+          backgroundColor: Color.fromRGBO(47, 180, 233, 1),
+          centerTitle: true,
         ),
         drawer: AppDrawer(),
         body: AddScreen(),
