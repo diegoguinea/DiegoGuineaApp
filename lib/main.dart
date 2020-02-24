@@ -9,8 +9,7 @@ import 'package:flutter_project/widgets/map.dart';
 import 'package:flutter_project/Routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_project/widgets/moreinfo.dart';
-
-
+import 'package:flutter_project/widgets/calendario.dart';
 
 void main() => runApp(MyApp());
 
@@ -36,6 +35,7 @@ class MyApp extends StatelessWidget {
           Routes.settings: (BuildContext context) => new SettingsPage(),
           Routes.addSpotType: (BuildContext context) => new AddPage(),
           Routes.moreinfo: (BuildContext context)=> new Moreinfo(),
+          Routes.calendario: (BuildContext context)=> new CalendarPage(),
         }
     );
   }

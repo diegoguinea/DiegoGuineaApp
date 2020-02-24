@@ -15,6 +15,8 @@ import 'package:flutter_project/utils/constants.dart';
 import 'package:flutter_project/home.dart';
 import 'package:flutter_project/utils/utils.dart';
 import 'package:flutter_project/Routes.dart';
+import 'package:timezone/data/latest.dart';
+import 'package:timezone/standalone.dart' as tz;
 
 class MapPage extends StatelessWidget{
 
@@ -68,9 +70,7 @@ class MapScreenState extends State<MapScreen> {
     //actualitzacio automatica de la ubicacio a traves del SetState
     _locationSubscription = location.onLocationChanged().listen((
         LocationData currentLocation) async {
-     // setState(() {
         _currentLocation = currentLocation;
-     // });
     });
 
     //els icones s'han de definir abans no es crei el mapa perque es vegin be
@@ -141,12 +141,14 @@ class MapScreenState extends State<MapScreen> {
 
 
   Widget _googleMap(BuildContext context) {
-    return GoogleMap(
-      mapType: MapType.normal,
-      onMapCreated: _onMapCreated,
-      initialCameraPosition: _urbioticaLocation,
-      myLocationEnabled: true,
-      markers: markers.values.toSet(),
+    return Container(
+      child: GoogleMap(
+        mapType: MapType.normal,
+        onMapCreated: _onMapCreated,
+        initialCameraPosition: _urbioticaLocation,
+        myLocationEnabled: true,
+        markers: markers.values.toSet(),
+      ),
     );
   }
 
@@ -240,13 +242,15 @@ class MapScreenState extends State<MapScreen> {
 
    _pressmarker(String pomid) async {
 
-    final response = await http.get(Constants.API_GET_POM_ID + pomid,
+     initializeTimeZones();
+
+     final response = await http.get(Constants.API_GET_POM_ID + pomid,
       headers: {HttpHeaders.authorizationHeader: Constants.PUBLIC_TOKEN},);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = json.decode(response.body);
-      ProjectIndividualSpot project = ProjectIndividualSpot.fromJson(jsonResponse);
 
+      ProjectIndividualSpot project = ProjectIndividualSpot.fromJson(jsonResponse);
 
       _showinfo(project);
 
@@ -267,51 +271,64 @@ class MapScreenState extends State<MapScreen> {
       return resultado;
    }
 
-   _inside(bool currentperiod, ProjectIndividualSpot project){
-       String result = "";
-       if(currentperiod == false){
-            result = "Current Regulated Period:  None";
-         }else{
-            result = "Current Regulated Period:   " + project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].starttime.substring(0,5) + "/" + project.regulated_spots.list_regulated_periods[0].days_of_the_week["0"].endtime.substring(0,5);
-         }
-       return result;
+   //obtenemos el horario a mostrar en el bottom sheet segun el dia de hoy
+   _horario(RegulatedPeriod regulatedPeriod, String project_tz){
+       Utils utils = new Utils();
+
+       var current_location_tz = tz.getLocation(project_tz);
+       var now = new tz.TZDateTime.now(current_location_tz);
+       int current_week_day = now.weekday - 1; //el 0 --> dilluns
+
+       String horario = utils.horario_start_end_tz(regulatedPeriod, current_week_day.toString() , project_tz);
+       String text = "Current Regulated Period:   "  + horario;
+
+       return text;
     }
 
-  _showinfo(ProjectIndividualSpot project){
-
+  _showinfo(ProjectIndividualSpot project) {
     Utils utils = new Utils();
     var regulatedPeriodWidgets = List<Widget>();
     var currentperiodWidget = List<Widget>();
-    String currentperiod;
+    bool insideCurrentRegulatedPeriod;
 
-    for(RegulatedPeriod regulatedPeriod in project.regulated_spots.list_regulated_periods){
-
+    for (RegulatedPeriod regulatedPeriod in project.regulated_spots.list_regulated_periods) {
       //miramos si la hora actual esta dentro del periodo regulado de la plaza de parking
-      //TODO si la variable insideCurrentRegulatedPeriod==false, poner "None" en la Row de "Current Regulated Period"
-       bool insideCurrentRegulatedPeriod = utils.isInsideInterval(regulatedPeriod);
-       currentperiod = _inside(insideCurrentRegulatedPeriod,project);
-       currentperiodWidget.add(
-         new Row(
-           children: <Widget>[
-             new Padding(padding: EdgeInsets.only(left: 25)),
-             Text(currentperiod,style: TextStyle(color: Colors.white),),
-           ],
-         ),
-       );
-      //creamos una lista de widgets que depende de cuantos "time_period_types" tenemos. Para cada ptime_period_types, añadimos un widget.
-      for(TimePeriodType timePeriodType in regulatedPeriod.time_period_types){
-        String resultado = _preciohora(timePeriodType, insideCurrentRegulatedPeriod);
-        if(resultado != "") {  //sino añade una row con el texto vacio
-          regulatedPeriodWidgets.add(
-            new Row(
-              children: <Widget>[
-                new Padding(padding: EdgeInsets.only(left: 50)),
-                Text(resultado, style: TextStyle(color: Colors.white),),
-              ],
-            ),
-          );
+      bool insideCurrentRegulatedPeriod = utils.isInsideInterval(
+          regulatedPeriod, project.project_timezone);
+
+      String currentperiod = "";
+      if (insideCurrentRegulatedPeriod) { //solo ponemos el texto "Current Regulated Period: None" si no hay ninguna otra información
+        currentperiod = _horario(regulatedPeriod, project.project_timezone);
+      } else if (!insideCurrentRegulatedPeriod && currentperiodWidget.isEmpty) {
+        currentperiod = "Current Regulated Period: None";
+      }
+
+      currentperiodWidget.add(
+        new Row(
+          children: <Widget>[
+            new Padding(padding: EdgeInsets.only(left: 25)),
+            Text(currentperiod, style: TextStyle(color: Colors.white),),
+          ],
+        ),
+      );
+
+      if(insideCurrentRegulatedPeriod){
+        //creamos una lista de widgets que depende de cuantos "time_period_types" tenemos. Para cada ptime_period_types, añadimos un widget.
+        for(TimePeriodType timePeriodType in regulatedPeriod.time_period_types){
+          String resultado = _preciohora(timePeriodType, insideCurrentRegulatedPeriod);
+          if(resultado != "") {  //sino añade una row con el texto vacio
+            regulatedPeriodWidgets.add(
+              new Row(
+                children: <Widget>[
+                  new Padding(padding: EdgeInsets.only(left: 50)),
+                  Text(resultado, style: TextStyle(color: Colors.white),),
+                ],
+              ),
+            );
+          }
         }
       }
+
 
     }
 
@@ -354,14 +371,28 @@ class MapScreenState extends State<MapScreen> {
                 SizedBox(height: 10,),
                Column(children: regulatedPeriodWidgets,),
                 SizedBox(height: 5,),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
+
                     RaisedButton(
+
                       color: Color.fromRGBO(47, 180, 233, 1),
                       child: Text('MORE INFO',style: TextStyle(color: Colors.white),),
                       onPressed: (){
-                        Navigator.pushNamed(context, Routes.moreinfo);
+                          Navigator.pushNamed(
+                            context,
+                            Routes.moreinfo,
+                            arguments: MoreInfoArguments(
+                              project.project_name,
+                              project.project_timezone,
+                              project.regulated_spots.name,
+                              project.regulated_spots.occupation.max_capacity,
+                              project.regulated_spots.list_regulated_periods,
+                            ),
+                          );
+
                       },
                     ),
 
@@ -372,7 +403,15 @@ class MapScreenState extends State<MapScreen> {
           ),
       );
     });
+
+
   }
-
-
+}
+class MoreInfoArguments{
+  String project_name;
+  String project_tz;
+  String name;
+  int max_capacity;
+  List<RegulatedPeriod> list_regulated_periods;
+  MoreInfoArguments(this.project_name, this.project_tz, this.name, this.max_capacity, this.list_regulated_periods);
 }

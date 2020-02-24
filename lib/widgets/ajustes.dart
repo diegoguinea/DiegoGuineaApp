@@ -49,6 +49,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
             Row(
               children: <Widget>[
+                new Padding(padding: EdgeInsets.only(left: 10)),
                 Container(
                   child: Text(localizations.localizacion,style: TextStyle(color: Color.fromRGBO(47, 180, 233, 1),fontWeight: FontWeight.bold),),
                 ),
