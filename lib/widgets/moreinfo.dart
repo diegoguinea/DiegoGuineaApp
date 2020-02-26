@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/datamodels/infoRegulatedSpot.dart';
+import 'package:flutter_project/services/lang.dart';
 import 'package:flutter_project/widgets/map.dart';
 import 'package:flutter_project/Routes.dart';
+import 'package:flutter_project/widgets/ProjectCardItem.dart';
 
 class Moreinfo extends StatelessWidget {
 
@@ -39,61 +41,62 @@ class MoreinforegulatedState extends State<Moreinforegulated> {
 
   @override
   Widget build(BuildContext context) {
+    multilang localizations = Localizations.of<multilang>(context, multilang);
     final MoreInfoArguments args = ModalRoute.of(context).settings.arguments;
-    var regulatedPeriodList = List<Widget>();
+    var regulatedPeriodItemList = List<Widget>(); //lista de varios regulated period
 
+    //para cada regulated period creamos una Card con sus datos
     for(RegulatedPeriod regulatedPeriod in args.list_regulated_periods){
-
-      regulatedPeriodList.add(
-        new Ink(
-          color: Color.fromRGBO(155, 155, 155, 0.5),
-          child: ListTile(
-            title: Text(regulatedPeriod.title,style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),
-          ),
-        ),
-      );
-      regulatedPeriodList.add(
-        ListTile(
-          title: Text('Dates              ' + regulatedPeriod.start.substring(8)+'/'+regulatedPeriod.start.substring(5,7) + ' - '
-              + regulatedPeriod.end.substring(8)+'/'+regulatedPeriod.end.substring(5,7),
-
-            style: TextStyle(color: Colors.blue),),
-        ),
-      );
 
       String currentperiod = _preciovalue(regulatedPeriod);
 
-      regulatedPeriodList.add(
-        ListTile(
-          title: Text( currentperiod,style: TextStyle(color: Colors.blue),),
-        ),
+      //TODO estaria bien crear una clase aparte igual que el ProjectCardItem
+      var regulatedPeriodItem = Column( children: ListTile.divideTiles(
+        context: context,
+          tiles: [
+            ListTile(
+              title: Text(regulatedPeriod.title,style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),),
+            ),
+            ListTile(
+              title: Text(localizations.fechas + regulatedPeriod.start.substring(8)+'/'+regulatedPeriod.start.substring(5,7) + ' - '
+                  + regulatedPeriod.end.substring(8)+'/'+regulatedPeriod.end.substring(5,7),
+
+                style: TextStyle(color: Colors.black54),),
+            ),
+            ListTile(
+              title: Text( currentperiod,style: TextStyle(color: Colors.black54),),
+            ),
+            ListTile(
+              title: Text(localizations.horarios, style:TextStyle(color: Colors.black54),),
+              trailing: Icon(Icons.arrow_right),
+              onTap: (){
+                Navigator.pushNamed(context, Routes.calendario,
+                  arguments: WeekDayArguments(
+                      regulatedPeriod,
+                      args.project_tz
+                  ),
+                );
+              },
+          ),
+
+      ]).toList());
+
+      //creamos una Card para cada periodo regulado
+      regulatedPeriodItemList.add(
+          Card(child:regulatedPeriodItem)
       );
 
-      regulatedPeriodList.add(
-        RaisedButton(
-          child: Text("Time table", style:TextStyle(color: Colors.blue),),
-          color: Colors.white,
-          onPressed: (){
-
-            Navigator.pushNamed(context, Routes.calendario,
-              arguments: WeekDayArguments(
-                  regulatedPeriod,
-                  args.project_tz
-              ),
-            );
-          },
-        ),
-      );
     }
+
+    //TODO añadir scroll por si es mas largo que la pantalla
     return ListView(
           children: <Widget>[
-              ListTile(
-                title: Text('City                 ' +  args.project_name,style: TextStyle(color: Colors.blue),),
-              ),
-            ListTile(
-              title: Text('Num Spots    ' + args.max_capacity.toString(),style: TextStyle(color: Colors.blue),),
-            ),
-            Column(children: regulatedPeriodList,), //llista dinamica de regulated period
+            //TODO mejorar el formato de los datos del proyecto
+            Card(child: ProjectCardItem(
+              projectName: args.project_name,
+              numSpots: args.max_capacity.toString(),
+            )),
+            Column(children: regulatedPeriodItemList,), //lista de varios regulated period
             ],
     );
 
@@ -102,13 +105,14 @@ class MoreinforegulatedState extends State<Moreinforegulated> {
 
   //TODO: Esta funcion es la que le da valor a una variable para guardar el tiempo y el precio (no consigo que funcione)
   _preciovalue(RegulatedPeriod regulatedPeriod){
+    multilang localizations = Localizations.of<multilang>(context, multilang);
     String resultado = "";
     String resultadoprecio = "";
     for(TimePeriodType timePeriodType in regulatedPeriod.time_period_types){
       if (timePeriodType.period_type_id == 3) {
-        resultadoprecio = "Max time:  " + timePeriodType.value + "min    ";
+        resultadoprecio = localizations.tiempomax + timePeriodType.value + "min    ";
       } else if (timePeriodType.period_type_id == 2) {
-        resultadoprecio = "Price:  " + timePeriodType.value + "€/h";
+        resultadoprecio = localizations.precio + timePeriodType.value + "€/h    ";
       }
       resultado = resultado + resultadoprecio;
 

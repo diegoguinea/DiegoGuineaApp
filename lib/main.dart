@@ -5,6 +5,7 @@ import 'package:flutter_project/widgets/ajustes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/widgets/information.dart';
+import 'package:flutter_project/widgets/iniciosesion.dart';
 import 'package:flutter_project/widgets/map.dart';
 import 'package:flutter_project/Routes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
           Routes.addSpotType: (BuildContext context) => new AddPage(),
           Routes.moreinfo: (BuildContext context)=> new Moreinfo(),
           Routes.calendario: (BuildContext context)=> new CalendarPage(),
+          Routes.iniciosesion: (BuildContext context)=> new loginclass(),
         }
     );
   }

@@ -18,7 +18,7 @@ class CalendarPage extends StatelessWidget {
 
     return new Scaffold(
       appBar: AppBar(
-        title: Text("Horarios"),
+        title: Text(localizations.horarios),
         backgroundColor: Color.fromRGBO(47, 180, 233, 1),
         centerTitle: true,
       ),
@@ -49,13 +49,14 @@ class CalendarState extends State<Calendar> {
 
     WeekDayArguments args = ModalRoute.of(context).settings.arguments;
 
+
       return Scaffold(
         body: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Center(
-              child: dataBody(args.regulatedPeriod, args.project_tz),
+              child: dataBody(args.regulatedPeriod, args.project_tz, context),
             ),
           ],
         ),
@@ -63,19 +64,19 @@ class CalendarState extends State<Calendar> {
   }
 }
 
-DataTable dataBody(RegulatedPeriod regulatedPeriod, project_tz){
-  List<WeekDay> users = WeekDay.getListaDiasSemana(regulatedPeriod, project_tz);
+DataTable dataBody(RegulatedPeriod regulatedPeriod, project_tz,BuildContext context){
+  multilang localizations = Localizations.of<multilang>(context, multilang);
+  List<WeekDay> users = WeekDay.getListaDiasSemana(regulatedPeriod, project_tz,context);
   return DataTable(
+
     columns: [
       DataColumn(
-          label: Text("Dia"),
+          label: Text(localizations.dia),
           numeric: false,
-          tooltip: "El primer dia"
       ),
       DataColumn(
-          label: Text("Horario"),
+          label: Text(localizations.horarios),
           numeric: false,
-          tooltip: "Este es el horario"
       ),
     ],
     rows: users.map(
@@ -93,24 +94,24 @@ DataTable dataBody(RegulatedPeriod regulatedPeriod, project_tz){
   );
 }
 class WeekDay{
-
   String dia;
   String horario;
 
   WeekDay({this.dia,this.horario});
 
-  static List<WeekDay> getListaDiasSemana(RegulatedPeriod regulatedPeriod, String project_tz){
+  static List<WeekDay> getListaDiasSemana(RegulatedPeriod regulatedPeriod, String project_tz,BuildContext context){
+    multilang localizations = Localizations.of<multilang>(context, multilang);
     List<WeekDay> dias_semana = new List();
 
     Utils utils = new Utils();
 
-    WeekDay lunes =  WeekDay(dia: "Lunes",horario: utils.horario_start_end_tz(regulatedPeriod, "0", project_tz));
-    WeekDay martes =  WeekDay(dia: "Martes",horario: utils.horario_start_end_tz(regulatedPeriod, "1", project_tz));
-    WeekDay miercoles = WeekDay(dia: "Miercoles",horario: utils.horario_start_end_tz(regulatedPeriod, "2", project_tz));
-    WeekDay jueves = WeekDay(dia: "Jueves",horario: utils.horario_start_end_tz(regulatedPeriod, "3", project_tz));
-    WeekDay viernes = WeekDay(dia: "Viernes",horario: utils.horario_start_end_tz(regulatedPeriod, "4", project_tz));
-    WeekDay sabado = WeekDay(dia: "Sabado",horario: utils.horario_start_end_tz(regulatedPeriod, "5", project_tz));
-    WeekDay domingo = WeekDay(dia: "Domingo",horario: utils.horario_start_end_tz(regulatedPeriod, "6", project_tz));
+    WeekDay lunes =  WeekDay(dia: localizations.lunes,horario: utils.horario_start_end_tz(regulatedPeriod, "0", project_tz));
+    WeekDay martes =  WeekDay(dia: localizations.martes,horario: utils.horario_start_end_tz(regulatedPeriod, "1", project_tz));
+    WeekDay miercoles = WeekDay(dia: localizations.miercoles,horario: utils.horario_start_end_tz(regulatedPeriod, "2", project_tz));
+    WeekDay jueves = WeekDay(dia: localizations.jueves,horario: utils.horario_start_end_tz(regulatedPeriod, "3", project_tz));
+    WeekDay viernes = WeekDay(dia: localizations.viernes,horario: utils.horario_start_end_tz(regulatedPeriod, "4", project_tz));
+    WeekDay sabado = WeekDay(dia: localizations.sabado,horario: utils.horario_start_end_tz(regulatedPeriod, "5", project_tz));
+    WeekDay domingo = WeekDay(dia: localizations.domingo,horario: utils.horario_start_end_tz(regulatedPeriod, "6", project_tz));
 
     dias_semana.add(lunes);
     dias_semana.add(martes);

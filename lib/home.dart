@@ -10,7 +10,7 @@ class DWidget extends StatelessWidget {
 
   @override
   Widget build (BuildContext context) {
-    multilang localizations = Localizations.of<multilang>(context, multilang);
+    multilang localizations =  Localizations.of<multilang>(context, multilang);
 
     return new Scaffold(
       drawer: AppDrawer(),
@@ -56,20 +56,29 @@ class AppDrawer extends StatelessWidget{
               Navigator.pushNamed(context, Routes.settings);
             },
           ),
-          new ListTile(
+          //es para la parte privada solo
+          /*new ListTile(
             leading: Icon(Icons.group_add,color: Colors.black),
             title: Text(localizations.anadir,style: TextStyle(color: Colors.black),) ,
             onTap: () {
               Navigator.pushNamed(context, Routes.addSpotType);
             },
-          ),
+          ),*/
           new ListTile(
             leading: Icon(Icons.exit_to_app,color: Colors.black
             ),
             title: Text(localizations.inicio,style: TextStyle(color: Colors.black),) ,
             onTap: () {
+              Navigator.pushNamed(context, Routes.iniciosesion);
             },
-          )
+          ),
+          new ListTile(
+            leading: Icon(Icons.group_add ,color: Colors.black
+            ),
+            title: Text(localizations.crearcuenta,style: TextStyle(color: Colors.black),) ,
+            onTap: () {
+            },
+          ),
         ],
       ) ,
     );
@@ -80,12 +89,16 @@ class AppDrawer extends StatelessWidget{
 
 Widget _createHeader(){
   return UserAccountsDrawerHeader(
-    accountName: Text("Usuario"),
-    accountEmail: Text("usuario@gmail.com"),
+    //esto parte privada una vez logueado el usuario
+    //accountName: Text("Usuario"),
+    //accountEmail: Text("usuario@gmail.com"),
+    //TODO para la parte publica, poner el Logo de la app
     decoration: BoxDecoration(
         color: Color.fromRGBO(47, 180, 233, 1),
-        image: DecorationImage(image: NetworkImage(""),
-            fit : BoxFit.cover
+        image: DecorationImage(
+            fit : BoxFit.cover,
+            alignment: Alignment.topCenter,
+                image: AssetImage('assets/logoblancoazul2.png'),
         )
     ),
   );

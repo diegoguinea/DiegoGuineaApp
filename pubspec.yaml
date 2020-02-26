@@ -26,10 +26,14 @@ dependencies:
   devicelocale: ^0.2.1
   flutter_calendar_carousel: ^1.4.10
   timezone: ^0.5.4
+  flutter_screenutil: ^1.0.2
+  shared_preferences: ^0.5.6+2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  http: any
+  shared_preferences: any
 
 
 

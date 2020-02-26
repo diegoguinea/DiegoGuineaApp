@@ -49,6 +49,13 @@ class multilang {
       return "Iniciar sesion";
     }
   }
+  String get crearcuenta{
+    if(nombrelang == 'en'){
+      return "Create Acount";
+    } if (nombrelang == 'es'){
+      return "Crear Cuenta";
+    }
+  }
   String get localizacion{
     if(nombrelang == 'en'){
       return "Location";
@@ -61,6 +68,104 @@ class multilang {
       return "Open loation settings";
     } if (nombrelang == 'es'){
       return "Abrir ajustes de localizacion";
+    }
+  }
+  String get fechas{
+    if(nombrelang == 'en'){
+      return "Dates        ";
+    } if (nombrelang == 'es'){
+      return "Fecha       ";
+    }
+  }
+  String get horarios{
+    if(nombrelang == 'en'){
+      return "Time table";
+    } if (nombrelang == 'es'){
+      return "Horarios";
+    }
+  }
+  String get ciudad{
+    if(nombrelang == 'en'){
+      return 'City                 ';
+    } if (nombrelang == 'es'){
+      return 'Ciudad               ';
+    }
+  }
+  String get num_spots{
+    if(nombrelang == 'en'){
+      return 'Num Spots';
+    } if (nombrelang == 'es'){
+      return 'Num Spots';
+    }
+  }
+  String get tiempomax{
+    if(nombrelang == 'en'){
+      return 'Max time:  ';
+    } if (nombrelang == 'es'){
+      return 'Tiempo maximo:   ';
+    }
+  }
+  String get precio{
+    if(nombrelang == 'en'){
+      return 'Price:  ';
+    } if (nombrelang == 'es'){
+      return 'Precio   ';
+    }
+  }
+  String get dia{
+    if(nombrelang == 'en'){
+      return 'Day';
+    } if (nombrelang == 'es'){
+      return 'Dia';
+    }
+  }
+  String get lunes{
+    if(nombrelang == 'en'){
+      return 'Monday';
+    } if (nombrelang == 'es'){
+      return 'Lunes';
+    }
+  }
+  String get martes{
+    if(nombrelang == 'en'){
+      return 'Tuesday';
+    } if (nombrelang == 'es'){
+      return 'Martes';
+    }
+  }
+  String get miercoles{
+    if(nombrelang == 'en'){
+      return 'Wednesday';
+    } if (nombrelang == 'es'){
+      return 'Miercoles';
+    }
+  }
+  String get jueves{
+    if(nombrelang == 'en'){
+      return 'Thursday';
+    } if (nombrelang == 'es'){
+      return 'Jueves';
+    }
+  }
+  String get viernes{
+    if(nombrelang == 'en'){
+      return 'Friday';
+    } if (nombrelang == 'es'){
+      return 'Viernes';
+    }
+  }
+  String get sabado{
+    if(nombrelang == 'en'){
+      return 'Saturday';
+    } if (nombrelang == 'es'){
+      return 'Sabado';
+    }
+  }
+  String get domingo{
+    if(nombrelang == 'en'){
+      return 'Sunday';
+    } if (nombrelang == 'es'){
+      return 'Domingo';
     }
   }
 }
